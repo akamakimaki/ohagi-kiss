@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fbe4ee">
+  <title>おはぎキス — 30秒で、何回チュッ？</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./game.js" defer></script>
+</head>
+
+<body>
+  <main>
+    <header>
+      <h1><img class="title" src="./images/title.png" alt="おはぎKISS" width="1218" height="798"></h1>
+      <p>30秒で、何回チュッ？</p>
+    </header>
+    <div class="toolbar">
+      <span>自己ベスト <b id="best">0</b> キス</span>
+      <button id="sound" class="small-button" type="button" aria-pressed="true">♪ 音 ON</button>
+    </div>
+    <div class="scoreboard">
+      <div id="clock"><span>のこり</span> <strong id="time">30.0</strong><span>秒</span></div>
+      <div><span>キス</span> <strong id="score">0</strong><span>回 ♥</span></div>
+    </div>
+    <div class="time-track" aria-hidden="true">
+      <div id="timeBar"></div>
+    </div>
+    <div id="stage" role="button" tabindex="0" aria-label="ゲーム画面。同じ高さでタップしてストップ">
+      <p class="hint" id="hint">ピンクの真ん中でストップ！</p>
+      <div class="zone"></div>
+      <div class="bull"></div>
+      <div id="giyu" class="actor"><img id="giyuImage" src="./images/giyu-normal.png" alt="義勇" draggable="false"></div>
+      <div id="sanemi" class="actor waiting"><img id="sanemiImage" src="./images/sanemi-normal.png" alt="実弥"
+          draggable="false"></div>
+      <div id="effect" aria-hidden="true"></div>
+      <div id="burst" aria-hidden="true"></div>
+      <div id="projectiles" aria-hidden="true"></div>
+    </div>
+    <section class="message-box" aria-live="polite" aria-atomic="true">
+      <h2 id="result">ど真ん中なら…？</h2>
+      <p id="message">🍃「おはぎィ？」</p>
+    </section>
+    <button id="action" type="button">30秒チャレンジ、はじめる！</button>
+    <footer>ボタン・ゲーム画面・スペースキーでストップ。<br>真ん中ならキス！ 次の挑戦は自動で始まるよ。</footer>
+    <noscript>このゲームを遊ぶにはJavaScriptを有効にしてください。</noscript>
+  </main>
+  <div id="heart-overlay" aria-hidden="true"></div>
+  <section id="ending" class="ending" role="dialog" aria-modal="true" aria-labelledby="endingTitle" hidden>
+    <div class="ending-backdrop" aria-hidden="true">
+      <img src="./images/giyu-kiss.png" alt="">
+      <img src="./images/sanemi-kiss.png" alt="">
+    </div>
+    <div class="ending-card">
+      <p class="ending-kicker">TIME UP ♥</p>
+      <h2 id="endingTitle">おはぎキスの結果</h2>
+      <p class="ending-score"><strong id="endingScore">0</strong><span>回キス！</span></p>
+      <p id="endingRecord" class="ending-record">自己ベスト 0回</p>
+      <div class="ending-history">
+        <h3>この端末の記録 TOP 5</h3>
+        <ol id="history"></ol>
+      </div>
+
+      <div class="rank-registration">
+        <button id="privateSubmit" type="button">この記録を登録</button>
+
+        <form id="recordLoginForm" hidden>
+          <label for="recordHandle">Blueskyのハンドル</label>
+          <input id="recordHandle" placeholder="example.bsky.social" autocomplete="username" required>
+          <button type="submit">Blueskyでログインして保存</button>
+        </form>
+
+        <p id="recordStatus" role="status" aria-live="polite"></p>
+
+        <a id="viewRanking" href="https://ohagi-ranking.makimaki-feed.net/?game=kiss&amp;view=mine" target="_blank"
+          rel="noopener noreferrer">自分の記録を見る</a>
+      </div>
+
+      <button id="playAgain" type="button">もう一度あそぶ ♥</button>
+
+      <button id="shareResult" type="button">🦋 Blueskyで結果を投稿</button>
+    </div>
+  </section>
+</body>
+
+</html>

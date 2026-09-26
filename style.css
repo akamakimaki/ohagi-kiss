@@ -1,0 +1,901 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    color-scheme: light;
+    --pink: #d6427e;
+    --ink: #684053;
+}
+
+body {
+    margin: 0;
+    min-height: 100svh;
+    padding: 14px 16px 25px;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(ellipse at top, #fffafc, #f7d6e5);
+    color: var(--ink);
+    font-family: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+    font-weight: 700;
+}
+
+main {
+    width: min(100%, 480px);
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    line-height: 0;
+}
+
+.title {
+    width: 220px;
+    max-width: 60%;
+    height: auto;
+}
+
+header p {
+    margin: 4px 0 12px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+
+button {
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.small-button {
+    padding: 8px 14px;
+    border: 1px solid #e7b5cc;
+    border-radius: 30px;
+    color: var(--ink);
+    background: #fff8fc;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.scoreboard {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 20px;
+    background: #fffcfd;
+    border: 1px solid #ecc2d5;
+    border-radius: 18px 18px 0 0;
+}
+
+.scoreboard span {
+    font-size: 12px;
+}
+
+.scoreboard strong {
+    font-size: 28px;
+    color: var(--pink);
+    font-variant-numeric: tabular-nums;
+}
+
+.time-track {
+    height: 5px;
+    background: #f4d9e5;
+    overflow: hidden;
+}
+
+#timeBar {
+    height: 100%;
+    background: linear-gradient(90deg, #f5a6c8, #da4b88);
+    transform-origin: left;
+}
+
+#clock.urgent strong {
+    color: #bd1a51;
+}
+
+#stage {
+    position: relative;
+    height: 360px;
+    overflow: hidden;
+    border: 1px solid #e0aac2;
+    border-top: 0;
+    border-radius: 0 0 22px 22px;
+    background-color: #fffafb;
+    background-image: linear-gradient(#cb8fa010 1px, transparent 1px), linear-gradient(90deg, #cb8fa010 1px, transparent 1px);
+    background-size: 28px 28px;
+    box-shadow: 0 12px 28px #9e426b12;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
+}
+
+.hint {
+    position: absolute;
+    top: 12px;
+    width: 100%;
+    margin: 0;
+    font-size: 13px;
+    color: #98677e;
+}
+
+.zone,
+.bull {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+}
+
+.zone {
+    top: calc(50% - 28px);
+    height: 56px;
+    background: #fce5ef;
+    border-block: 1px dashed #dda4bd;
+}
+
+.bull {
+    top: calc(50% - 7px);
+    height: 14px;
+    background: #f2aac8;
+}
+
+.actor {
+    position: absolute;
+    width: 112px;
+    height: 120px;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.actor img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+    transform-origin: 50% 85%;
+}
+
+#giyu {
+    left: 24%;
+    top: calc(50% - 104px);
+}
+
+#sanemi {
+    left: 76%;
+    top: 50%;
+}
+
+#stage.approach #giyu {
+    left: calc(76% - 80px);
+}
+
+/* 接近に待ち時間をつけない。怒りも同じフレームで開始。 */
+#sanemi.waiting img {
+    animation: rhythm .5s ease-in-out infinite;
+}
+
+@keyframes rhythm {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+#sanemi.angry img {
+    animation: furious .16s linear infinite;
+}
+
+@keyframes furious {
+
+    0%,
+    100% {
+        transform: translate(-5px, -2px) rotate(-7deg);
+    }
+
+    25% {
+        transform: translate(5px, -7px) rotate(7deg);
+    }
+
+    50% {
+        transform: translate(-5px, -4px) rotate(-7deg);
+    }
+
+    75% {
+        transform: translate(5px, -10px) rotate(7deg);
+    }
+}
+
+#stage.kiss {
+    background-color: #ffe4ef;
+}
+
+#stage.kiss #sanemi img {
+    animation: surprised .3s ease-out, shy .6s .3s ease-in-out infinite;
+}
+
+#stage.kiss #giyu img {
+    animation: lean .28s ease-out both;
+}
+
+@keyframes surprised {
+    50% {
+        transform: translateY(-12px) rotate(4deg);
+    }
+}
+
+@keyframes shy {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-2deg);
+    }
+
+    50% {
+        transform: translateY(-3px) rotate(2deg);
+    }
+}
+
+@keyframes lean {
+    from {
+        transform: translateX(-8px) rotate(-5deg);
+    }
+
+    to {
+        transform: translateX(5px) rotate(3deg);
+    }
+}
+
+/* 空振り：びくっ → がっくり */
+#stage.miss #giyu img {
+    animation: giyu-disappointed .75s ease-out both;
+}
+
+@keyframes giyu-disappointed {
+    0% {
+        transform: translateY(0) rotate(0);
+        filter: none;
+    }
+
+    25% {
+        transform: translateY(-6px) rotate(6deg);
+        filter: none;
+    }
+
+    65% {
+        transform: translateY(12px) rotate(-12deg);
+        filter: grayscale(.6) brightness(.72);
+    }
+
+    100% {
+        transform: translateY(16px) rotate(-14deg) scale(.88);
+        filter: grayscale(.85) brightness(.58);
+    }
+}
+
+/* 空振り時の文字 */
+#stage.miss::after {
+    content: "チーン……";
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    z-index: 5;
+    color: #77546c;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 900;
+    text-shadow: 2px 2px #fff, -2px -2px #fff;
+    pointer-events: none;
+    animation: miss-caption .45s ease-out both;
+}
+
+@keyframes miss-caption {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -12px) scale(.6);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+}
+
+@keyframes droop {
+    to {
+        transform: translateY(7px) rotate(-10deg);
+        filter: saturate(.6);
+    }
+}
+
+#stage.hit {
+    animation: impact .22s linear;
+}
+
+@keyframes impact {
+    25% {
+        transform: translateX(-4px);
+    }
+
+    75% {
+        transform: translateX(4px);
+    }
+}
+
+#effect {
+    position: absolute;
+    left: 76%;
+    top: calc(50% - 64px);
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+#burst {
+    position: absolute;
+    top: 42px;
+    width: 100%;
+    color: #ce3574;
+    font-size: 28px;
+    font-weight: 900;
+    text-shadow: 0 2px white;
+    pointer-events: none;
+}
+
+#stage.kiss #burst {
+    animation: pop .35s ease-out both;
+}
+
+@keyframes pop {
+    0% {
+        transform: scale(.3);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#projectiles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 4;
+}
+
+.ohagi {
+    position: absolute;
+    width: 27px;
+    height: 23px;
+    border-radius: 45% 53% 46% 49%;
+    background: radial-gradient(circle at 30% 25%, #986357 1px, transparent 2px) 0 0 / 6px 6px, radial-gradient(ellipse at 35% 25%, #704739, #39241f);
+    box-shadow: inset -3px -3px 3px #27181755, 1px 2px 0 #ffffff88;
+}
+
+.message-box {
+    min-height: 85px;
+    margin: 12px 0;
+    padding: 12px 8px;
+    border: 1px solid #e5bfd0;
+    border-radius: 16px;
+    background: #fffafb;
+}
+
+#result {
+    margin: 0 0 4px;
+    color: #b7326b;
+    font-size: 23px;
+}
+
+#message {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+#action {
+    width: 100%;
+    min-height: 54px;
+    padding: 12px 8px;
+    border-radius: 16px;
+    color: white;
+    background: #d65088;
+    box-shadow: 0 4px #aa3d6e;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+#action:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px #aa3d6e;
+}
+
+#action:disabled {
+    opacity: .72;
+    cursor: default;
+}
+
+button:focus-visible,
+#stage:focus-visible {
+    outline: 3px solid #9c3265;
+    outline-offset: 4px;
+}
+
+footer {
+    margin-top: 16px;
+    color: #85596f;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+#heart-overlay {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 30;
+}
+
+.flying-heart {
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 1;
+    font-weight: 900;
+    text-shadow: 0 2px white, 0 0 14px #fff9;
+    will-change: transform, opacity;
+}
+
+.ending[hidden] {
+    display: none;
+}
+
+.ending {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    padding: max(14px, env(safe-area-inset-top)) 16px max(14px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    background: linear-gradient(140deg, #ffeff6ef, #f3a7cae8);
+    isolation: isolate;
+}
+
+.ending-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0px, 2vw, 32px);
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.ending-backdrop img {
+    width: min(58vw, 480px);
+    max-height: 94svh;
+    object-fit: contain;
+    opacity: .38;
+    filter: drop-shadow(0 24px 12px #9c3a6944);
+}
+
+.ending-backdrop img:first-child {
+    transform: translate(22%, 4%) rotate(-9deg);
+}
+
+.ending-backdrop img:last-child {
+    transform: translate(-5%, 6%) rotate(8deg);
+}
+
+.ending-card {
+    position: relative;
+    z-index: 1;
+    width: min(88vw, 330px);
+    margin: auto;
+    padding: 18px;
+    border: 2px solid #fff;
+    border-radius: 26px;
+    background: #fff8fce5;
+    box-shadow: 0 18px 60px #a1266280;
+    text-align: center;
+    backdrop-filter: blur(6px);
+}
+
+.ending-kicker {
+    margin: 0 0 2px;
+    color: #aa225e;
+    font-size: 14px;
+    letter-spacing: .2em;
+}
+
+.ending-card h2 {
+    margin: 0;
+    color: #9e225d;
+    font-size: clamp(20px, 6vw, 27px);
+    font-weight: 900;
+}
+
+.ending-score {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10px;
+    margin: 0;
+    color: #c83278;
+}
+
+.ending-score strong {
+    font-size: clamp(54px, 15vw, 74px);
+    font-weight: 900;
+    line-height: 1.1;
+    text-shadow: 4px 4px #fff, -4px -4px #fff;
+    font-variant-numeric: tabular-nums;
+}
+
+.ending-score span {
+    font-size: 23px;
+    font-weight: 900;
+}
+
+.ending-record {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.ending-history {
+    padding: 10px 14px;
+    border-radius: 16px;
+    background: #ffe5f1c7;
+    text-align: left;
+}
+
+.ending-history h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    color: #9a3867;
+}
+
+.ending-history ol {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.ending-history li {
+    min-width: 0;
+    padding: 4px 0;
+    border-radius: 10px;
+    background: #fff8fc;
+    font-size: 12px;
+}
+
+.ending-history li strong {
+    display: block;
+    font-size: 18px;
+    color: #b83170;
+}
+
+#playAgain {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 14px;
+    border-radius: 15px;
+    color: #fff;
+    background: #cb3e80;
+    font-size: 19px;
+    font-weight: 900;
+    box-shadow: 0 4px #942859;
+}
+
+#playAgain:focus-visible {
+    outline: 3px solid #942859;
+    outline-offset: 3px;
+}
+
+@media (max-width: 360px) {
+    body {
+        padding-inline: 10px;
+    }
+
+    .scoreboard {
+        padding-inline: 12px;
+    }
+
+    #action {
+        font-size: 17px;
+    }
+}
+
+@media (max-height: 760px) {
+    .title {
+        width: 170px;
+    }
+
+    body {
+        padding-top: 8px;
+    }
+
+    #stage {
+        height: 340px;
+    }
+
+    header p {
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 600px) {
+    .ending-backdrop {
+        justify-content: space-between;
+    }
+
+    .ending-backdrop img {
+        width: 74vw;
+        position: absolute;
+    }
+
+    .ending-backdrop img:first-child {
+        left: -30vw;
+        top: 10svh;
+    }
+
+    .ending-backdrop img:last-child {
+        transform: translate(-22%, 6%) rotate(8deg);
+    }
+}
+
+@media (max-width: 390px) {
+    #stage {
+        height: clamp(260px, 47svh, 340px);
+    }
+
+    .ending-history {
+        padding-inline: 8px;
+    }
+}
+
+/* 待機・怒りは小さな動きで残し、大きな揺れとハートの移動を抑える。 */
+@media (prefers-reduced-motion: reduce) {
+    #stage.hit {
+        animation: none;
+    }
+
+    #stage.kiss .actor img {
+        animation: none;
+    }
+}
+
+
+//* 結果画面：全身を切らず、結果を手前に重ねる */
+.ending {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+.ending-backdrop {
+    position: relative;
+    inset: auto;
+    width: min(100%, 430px);
+    height: clamp(260px, 46svh, 365px);
+    flex: 0 0 auto;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    overflow: visible;
+}
+
+.ending-backdrop img {
+    position: relative;
+    flex: 0 0 min(100%, 50vw);
+    width: min(70%, 50vw);
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    opacity: 1;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+}
+
+.ending-backdrop img:first-child {
+    z-index: 2;
+    transform: translate(28%, 0) rotate(-4deg);
+}
+
+.ending-backdrop img:last-child {
+    z-index: 1;
+    transform: translate(-26%, 0) rotate(4deg);
+}
+
+.ending-card {
+    z-index: 3;
+    margin: -65px 0 0;
+    background: #fff8fce0;
+}
+
+
+/* 「いらねェ！！」で義勇が汗をかく */
+/* 「いらねェ！！」で義勇が汗をかく */
+#stage.hit #giyu::before,
+#stage.hit #giyu::after {
+    content: "💦";
+    position: absolute;
+    z-index: 5;
+    font-size: 26px;
+    pointer-events: none;
+    animation: sweat-pop .45s ease-out both;
+}
+
+#stage.hit #giyu::before {
+    top: -10px;
+    left: -18px;
+    transform: scaleX(-1) rotate(-25deg);
+}
+
+#stage.hit #giyu::after {
+    top: 8px;
+    right: -16px;
+    animation-delay: .08s;
+}
+
+
+@keyframes sweat-pop {
+    from {
+        opacity: 0;
+        scale: .35;
+    }
+
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+
+.rank-registration {
+    display: grid;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+#privateSubmit,
+#viewRanking,
+#recordLoginForm button {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 10px 16px;
+    border: 2px solid #704454;
+    border-radius: 15px;
+    font: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#privateSubmit {
+    background: #cb3e80;
+    color: white;
+}
+
+#viewRanking {
+    background: #fffaf2;
+    color: #704454;
+}
+
+#recordLoginForm {
+    display: grid;
+    gap: 8px;
+    text-align: left;
+}
+
+#recordLoginForm[hidden] {
+    display: none;
+}
+
+#recordHandle {
+    width: 100%;
+    min-height: 48px;
+    padding: 10px;
+    border: 2px solid #704454;
+    border-radius: 12px;
+    font: inherit;
+    font-size: 16px;
+}
+
+#recordLoginForm button {
+    background: #fffaf2;
+    color: #704454;
+}
+
+#recordStatus {
+    margin: 0;
+    font-size: 14px;
+}
+
+
+.ending-card>#playAgain,
+.ending-card>#shareResult {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    min-height: 52px;
+    margin: 10px 0 0;
+    border-radius: 15px;
+    font: inherit;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.ending-card>#shareResult {
+    border: 0;
+    background: #1787ed;
+    color: #fff;
+}
+
+
+#privateSubmit,
+#viewRanking,
+#playAgain,
+#shareResult {
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 15px;
+}
+
+.rank-registration {
+    gap: 7px;
+}
+
+#playAgain,
+#shareResult {
+    margin-top: 7px;
+}
+
+
+#endingTitle:focus {
+    outline: none;
+}
+
+#playAgain {
+    box-shadow: none;
+}

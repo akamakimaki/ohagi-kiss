@@ -174,7 +174,7 @@ function stop() {
   stopEffects();
   giyuImage.src = IMAGES.giyuAttack;
   const distance = Math.abs(offset);
-  if (distance <= SETTINGS.kissRange) {
+  if (distance <= (matchMedia("(max-width: 600px)").matches ? 12 : SETTINGS.kissRange)) {
     stage.className = "approach kiss";
     offset = 0;
     draw();
@@ -271,8 +271,8 @@ function launchHearts() {
   // 前のハートを消さずに漂わせる。連続成功でも最大240個に制限。
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const mobile = matchMedia("(max-width: 600px)").matches;
-  const count = reduced ? 12 : mobile ? 36 : 90;
-  const limit = mobile ? 80 : 240;
+  const count = reduced ? 12 : mobile ? 22 : 90;
+  const limit = mobile ? 44 : 240;
 
   while (overlay.children.length + count > limit) {
     const first = overlay.firstElementChild;

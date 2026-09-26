@@ -922,8 +922,8 @@ footer {
 #ending .ending-art {
     display: block;
     flex: 0 0 auto;
-    width: min(100%, 380px);
-    height: clamp(150px, 28svh, 250px);
+    width: min(78vw, 270px);
+    height: min(20svh, 155px);
     object-fit: contain;
     position: relative;
     z-index: 1;
@@ -1062,5 +1062,15 @@ footer {
 
     .flying-heart {
         text-shadow: none;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        display: block;
+    }
+
+    main #stage {
+        height: clamp(230px, calc(100dvh - 350px), 320px);
     }
 }

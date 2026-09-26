@@ -178,7 +178,7 @@ function stop() {
   giyuImage.src = IMAGES.giyuAttack;
   const distance = Math.abs(offset);
   const mobile = matchMedia("(max-width: 600px)").matches;
-  if (distance <= (mobile ? 15 : SETTINGS.kissRange)) {
+  if (distance <= (mobile ? 14 : SETTINGS.kissRange)) {
     stage.className = "approach kiss";
     offset = 0;
     draw();
@@ -399,7 +399,7 @@ $("shareResult").addEventListener("click", () => {
     `おはぎKISSで ${finishedScore}回キス！💋`,
     "あなたは30秒で何回チュッできる？",
     "",
-    "https://akamakimaki.github.io/ohagi-kiss/?share=1",
+    "https://akamakimaki.github.io/ohagi-kiss/?share=2",
     "",
     "#おはぎKISS"
   ].join("\n");

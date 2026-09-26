@@ -899,3 +899,168 @@ footer {
 #playAgain {
     box-shadow: none;
 }
+
+/* 結果画面：専用の1枚画像を使う */
+#ending[hidden] {
+    display: none;
+}
+
+#ending {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 12px 12px max(16px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+#ending .ending-art {
+    display: block;
+    flex: 0 0 auto;
+    width: min(100%, 380px);
+    height: clamp(150px, 28svh, 250px);
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+}
+
+/* 画像の下端に、結果カードを少し重ねる */
+#ending .ending-card {
+    flex: 0 0 auto;
+    width: min(100%, 350px);
+    margin: -14px 0 0;
+    padding: 14px;
+    position: relative;
+    z-index: 2;
+    backdrop-filter: none;
+    box-shadow: 0 8px 24px #a1266230;
+}
+
+#ending .ending-kicker {
+    margin: 0 0 4px;
+    font-size: 12px;
+}
+
+#ending #endingTitle {
+    margin: 0 0 6px;
+    font-size: 22px;
+}
+
+#ending .ending-score {
+    margin: 4px 0;
+}
+
+#ending .ending-score strong {
+    font-size: 52px;
+    line-height: 1;
+}
+
+#ending .ending-score span {
+    font-size: 21px;
+}
+
+#ending .ending-record {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+#ending .ending-history {
+    margin: 10px 0;
+    padding: 10px;
+}
+
+#ending .ending-history h3 {
+    margin: 0 0 6px;
+    font-size: 13px;
+}
+
+#ending .rank-registration {
+    margin: 10px 0 0;
+}
+
+#ending #privateSubmit,
+#ending #viewRanking,
+#ending #playAgain,
+#ending #shareResult {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    margin: 8px 0 0;
+    padding: 8px 10px;
+    font-size: 15px;
+    line-height: 1.4;
+    box-sizing: border-box;
+    box-shadow: none;
+}
+
+#ending #recordLoginForm input {
+    width: 100%;
+    min-width: 0;
+    font-size: 16px;
+}
+
+/* スマホ：ゲーム画面をコンパクトにする */
+@media (max-width: 600px) {
+    body {
+        padding: 8px 12px max(12px, env(safe-area-inset-bottom));
+    }
+
+    main .title {
+        width: 110px;
+    }
+
+    main header p {
+        margin: 2px 0 6px;
+        font-size: 12px;
+    }
+
+    main .toolbar {
+        margin-bottom: 6px;
+    }
+
+    main .scoreboard {
+        padding: 5px 12px;
+    }
+
+    main #stage {
+        height: clamp(260px, calc(100svh - 320px), 360px);
+        touch-action: none;
+    }
+
+    main .message-box {
+        min-height: 62px;
+        margin: 8px 0;
+        padding: 6px;
+    }
+
+    main #result {
+        font-size: 20px;
+    }
+
+    main #message {
+        font-size: 13px;
+    }
+
+    main #action {
+        min-height: 46px;
+        padding: 8px;
+        font-size: 17px;
+    }
+
+    main footer {
+        margin-top: 8px;
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    .flying-heart {
+        text-shadow: none;
+    }
+}

@@ -70,15 +70,31 @@ $("sound").addEventListener("click", () => {
 let state = "ready", score = 0, offset = -SETTINGS.moveRange;
 let phase = -Math.PI / 2, lastTime = null, deadline = 0, nextAt = 0, raf = 0;
 function active() { return state === "playing" || state === "reaction"; }
-function draw() { giyu.style.top = `calc(50% + ${offset}px)`; }
+
+
+let travelRange = SETTINGS.moveRange;
+
+function draw() {
+  giyu.style.top = "50%";
+  giyu.style.transform =
+    `translate(-50%, -50%) translate3d(0, ${offset}px, 0)`;
+}
+
 function setSanemi(mode) {
   sanemi.className = `actor ${mode}`;
-  sanemiImage.src = mode === "angry" ? IMAGES.sanemiAngry : mode === "kiss" ? IMAGES.sanemiKiss : IMAGES.sanemiNormal;
+  sanemiImage.src =
+    mode === "angry" ? IMAGES.sanemiAngry :
+      mode === "kiss" ? IMAGES.sanemiKiss :
+        IMAGES.sanemiNormal;
 }
+
 function clearParticles(container) {
-  container.querySelectorAll("*").forEach(el => el.getAnimations().forEach(a => a.cancel()));
+  container.querySelectorAll("*").forEach(el => {
+    el.getAnimations().forEach(a => a.cancel());
+  });
   container.replaceChildren();
 }
+
 function resetScene() {
   stage.className = "";
   $("effect").textContent = "";
@@ -87,20 +103,32 @@ function resetScene() {
   giyuImage.src = IMAGES.giyuNormal;
   setSanemi("waiting");
 }
+
 function beginAttempt() {
+  travelRange = Math.max(
+    0,
+    Math.min(
+      SETTINGS.moveRange,
+      stage.clientHeight / 2 - giyu.offsetHeight / 2 - 12
+    )
+  );
+
   resetScene();
   state = "playing";
-  // 同じタイミングを連打するだけにならないよう、上下の端から交互にランダム開始。
   phase = Math.random() < .5 ? -Math.PI / 2 : Math.PI / 2;
-  offset = Math.sin(phase) * SETTINGS.moveRange;
+  offset = Math.sin(phase) * travelRange;
   lastTime = null;
   draw();
+
   result.textContent = "高さを合わせて…";
   message.textContent = "🍃「おはぎィ？」";
   action.textContent = "ストップ！";
   action.disabled = false;
 }
+
+
 function start() {
+  action.style.visibility = "visible";
   cancelAnimationFrame(raf);
   $("ending").hidden = true;
   clearParticles(overlay);
@@ -129,7 +157,7 @@ function tick(now) {
   if (state === "playing") {
     if (lastTime !== null) phase += Math.min((now - lastTime) / 1000, .05) * SETTINGS.speed;
     lastTime = now;
-    offset = Math.sin(phase) * SETTINGS.moveRange;
+    offset = Math.sin(phase) * travelRange;
     draw();
   }
   raf = requestAnimationFrame(tick);
@@ -172,8 +200,8 @@ function stop() {
     // 遠すぎると接近せず、とんちんかんな場所で空振り。
     stage.className = "miss";
     setSanemi("waiting");
-    result.textContent = "ぽとっ……";
-    message.textContent = "🌊「……すまない」";
+    result.textContent = "ぽとっ…";
+    message.textContent = "🌊「…すまない」";
     playSound("whoosh"); playSound("shock");
     throwOhagi(false);
   }
@@ -190,7 +218,7 @@ function finish() {
   // BGMをそのまま流して、最後もキスの効果音とハートで祝う。
   stopEffects();
   action.disabled = false;
-  action.textContent = "もう一度、30秒チャレンジ！";
+  action.style.visibility = "hidden";
   const record = score > best;
   best = Math.max(best, score);
   saveStored("best", best);
@@ -242,8 +270,11 @@ function throwOhagi(hit) {
 function launchHearts() {
   // 前のハートを消さずに漂わせる。連続成功でも最大240個に制限。
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const count = reduced ? 18 : 90;
-  while (overlay.children.length + count > 240) {
+  const mobile = matchMedia("(max-width: 600px)").matches;
+  const count = reduced ? 12 : mobile ? 36 : 90;
+  const limit = mobile ? 80 : 240;
+
+  while (overlay.children.length + count > limit) {
     const first = overlay.firstElementChild;
     first.getAnimations().forEach(a => a.cancel()); first.remove();
   }
@@ -261,7 +292,7 @@ function launchHearts() {
     const x = Math.random() * Math.max(1, innerWidth - size);
     const y = Math.random() * innerHeight;
     const sway = (30 + Math.random() * 55) * (Math.random() < .5 ? 1 : -1);
-    const fromCouple = i < 40;
+    const fromCouple = i < Math.ceil(count * 0.45);
     const transform = (a, b, r = 0, s = 1) => `translate(${a}px,${b}px) rotate(${r}deg) scale(${s})`;
     const frames = reduced ? [
       { transform: transform(x, y), opacity: 0 },

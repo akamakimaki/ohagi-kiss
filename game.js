@@ -175,7 +175,7 @@ function stop() {
   giyuImage.src = IMAGES.giyuAttack;
   const distance = Math.abs(offset);
   const mobile = matchMedia("(max-width: 600px)").matches;
-  if (distance <= (mobile ? 22 : SETTINGS.kissRange)) {
+  if (distance <= (mobile ? 17 : SETTINGS.kissRange)) {
     stage.className = "approach kiss";
     offset = 0;
     draw();

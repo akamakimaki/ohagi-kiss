@@ -1074,3 +1074,77 @@ footer {
         height: clamp(230px, calc(100dvh - 350px), 320px);
     }
 }
+
+/* ゲーム終了時のTIME UP演出 */
+.time-up-flash[hidden] {
+    display: none;
+}
+
+.time-up-flash {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-content: center;
+    gap: 12px;
+    padding: 20px;
+    color: white;
+    text-align: center;
+    background:
+        radial-gradient(circle, #f05f9bdd, #c82d70ee);
+    pointer-events: auto;
+}
+
+.time-up-flash strong {
+    display: block;
+    font-size: clamp(54px, 15vw, 96px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: .04em;
+    text-shadow:
+        0 5px 0 #9f275d,
+        0 0 25px #fff;
+    animation: time-up-pop .8s cubic-bezier(.2, 1.5, .4, 1) both;
+}
+
+.time-up-flash span {
+    font-size: clamp(17px, 5vw, 25px);
+    animation: time-up-message .5s .35s both;
+}
+
+@keyframes time-up-pop {
+    0% {
+        opacity: 0;
+        transform: scale(.25) rotate(-8deg);
+    }
+
+    65% {
+        opacity: 1;
+        transform: scale(1.15) rotate(3deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes time-up-message {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Safariで結果画像の途中までスクロールされるのを防ぐ */
+#ending .ending-art {
+    width: min(78vw, 270px);
+    height: auto;
+    max-height: 155px;
+    object-fit: contain;
+    flex-shrink: 0;
+}

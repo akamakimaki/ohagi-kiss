@@ -2,7 +2,7 @@
 
 // ★ゲーム調整（速度はこれまでと同じ）
 const SETTINGS = {
-  seconds: 30, speed: 4.5, kissRange: 7, ohagiRange: 28, moveRange: 104,
+  seconds: 30, speed: 4.5, kissRange: 10, ohagiRange: 28, moveRange: 104,
   resultMs: 850
 };
 const IMAGES = {
@@ -69,6 +69,7 @@ $("sound").addEventListener("click", () => {
 
 let state = "ready", score = 0, offset = -SETTINGS.moveRange;
 let phase = -Math.PI / 2, lastTime = null, deadline = 0, nextAt = 0, raf = 0;
+let endingTimer = 0;
 function active() { return state === "playing" || state === "reaction"; }
 
 
@@ -128,6 +129,8 @@ function beginAttempt() {
 
 
 function start() {
+  clearTimeout(endingTimer);
+  $("timeUpFlash").hidden = true;
   action.style.visibility = "visible";
   cancelAnimationFrame(raf);
   $("ending").hidden = true;
@@ -175,7 +178,7 @@ function stop() {
   giyuImage.src = IMAGES.giyuAttack;
   const distance = Math.abs(offset);
   const mobile = matchMedia("(max-width: 600px)").matches;
-  if (distance <= (mobile ? 17 : SETTINGS.kissRange)) {
+  if (distance <= (mobile ? 15 : SETTINGS.kissRange)) {
     stage.className = "approach kiss";
     offset = 0;
     draw();
@@ -241,11 +244,26 @@ function finish() {
     li.appendChild(number);
     list.appendChild(li);
   });
-  $("ending").hidden = false;
-  $("endingTitle").focus({ preventScroll: true });
-  $("ending").scrollTop = 0;
-  playSound("kiss"); playSound("touchi");
-  launchHearts();
+  const ending = $("ending");
+  const timeUpFlash = $("timeUpFlash");
+
+  ending.hidden = true;
+  timeUpFlash.hidden = false;
+
+  endingTimer = window.setTimeout(() => {
+    timeUpFlash.hidden = true;
+    ending.hidden = false;
+
+    ending.scrollTop = 0;
+
+    requestAnimationFrame(() => {
+      ending.scrollTop = 0;
+    });
+
+    playSound("kiss");
+    playSound("touchi");
+    launchHearts();
+  }, 1600);
 }
 function animateParticle(el, frames, options) {
   if (!el.animate) { el.remove(); return; }
@@ -381,7 +399,7 @@ $("shareResult").addEventListener("click", () => {
     `おはぎKISSで ${finishedScore}回キス！💋`,
     "あなたは30秒で何回チュッできる？",
     "",
-    "https://akamakimaki.github.io/ohagi-kiss/",
+    "https://akamakimaki.github.io/ohagi-kiss/?share=1",
     "",
     "#おはぎKISS"
   ].join("\n");

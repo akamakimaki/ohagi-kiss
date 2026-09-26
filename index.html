@@ -5,13 +5,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#fbe4ee">
-  <title>おはぎキス — 30秒で、何回チュッ？</title>
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="おはぎKISS">
+  <meta property="og:title" content="おはぎKISS">
+  <meta property="og:description" content="30秒で、何回チュッできる？">
+  <meta property="og:url" content="https://akamakimaki.github.io/ohagi-kiss/">
+  <meta property="og:image" content="https://akamakimaki.github.io/ohagi-kiss/images/linkcard.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>おはぎKISS — 30秒で、何回チュッ？</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="./style.css">
-  <script src="./game.js" defer></script>
+  <link rel="stylesheet" href="./style.css?v=4">
+  <script src="./game.js?v=4" defer></script>
 </head>
 
 <body>
@@ -51,6 +60,10 @@
     <noscript>このゲームを遊ぶにはJavaScriptを有効にしてください。</noscript>
   </main>
   <div id="heart-overlay" aria-hidden="true"></div>
+  <div id="timeUpFlash" class="time-up-flash" hidden aria-hidden="true">
+    <strong>TIME UP!</strong>
+    <span>30秒チャレンジ終了 ♥</span>
+  </div>
   <section id="ending" class="ending" role="dialog" aria-modal="true" aria-labelledby="endingTitle" hidden>
     <img class="ending-art" src="./images/result-kiss.png" alt="キスする義勇と実弥">
     <div class="ending-card">

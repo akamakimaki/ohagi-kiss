@@ -377,8 +377,18 @@ $("recordLoginForm").addEventListener("submit", event => {
 });
 
 $("shareResult").addEventListener("click", () => {
-  const text = `おはぎKISSで ${score}回キス！💋\n\n#おはぎKISS`;
-  const url = "https://bsky.app/intent/compose?text=" + encodeURIComponent(text);
+  const text = [
+    `おはぎKISSで ${finishedScore}回キス！💋`,
+    "あなたは30秒で何回チュッできる？",
+    "",
+    "https://akamakimaki.github.io/ohagi-kiss/",
+    "",
+    "#おはぎKISS"
+  ].join("\n");
+
+  const url = "https://bsky.app/intent/compose?text=" +
+    encodeURIComponent(text);
+
   window.open(url, "_blank", "noopener,noreferrer");
 });
 stage.addEventListener("pointerdown", event => {

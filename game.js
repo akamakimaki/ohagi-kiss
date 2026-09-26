@@ -174,7 +174,8 @@ function stop() {
   stopEffects();
   giyuImage.src = IMAGES.giyuAttack;
   const distance = Math.abs(offset);
-  if (distance <= (matchMedia("(max-width: 600px)").matches ? 12 : SETTINGS.kissRange)) {
+  const mobile = matchMedia("(max-width: 600px)").matches;
+  if (distance <= (mobile ? 22 : SETTINGS.kissRange)) {
     stage.className = "approach kiss";
     offset = 0;
     draw();
@@ -188,7 +189,7 @@ function stop() {
     message.textContent = "🍃「…ッ！？」";
     playSound("kiss"); playSound("touchi");
     launchHearts();
-  } else if (distance <= SETTINGS.ohagiRange) {
+  } else if (distance <= (mobile ? 40 : SETTINGS.ohagiRange)) {
     stage.className = "approach hit";
     setSanemi("angry");
     $("effect").textContent = "💢";
@@ -241,7 +242,8 @@ function finish() {
     list.appendChild(li);
   });
   $("ending").hidden = false;
-  $("endingTitle").focus();
+  $("endingTitle").focus({ preventScroll: true });
+  $("ending").scrollTop = 0;
   playSound("kiss"); playSound("touchi");
   launchHearts();
 }

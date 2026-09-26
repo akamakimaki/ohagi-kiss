@@ -339,43 +339,16 @@ function activate() {
 action.addEventListener("click", activate);
 $("playAgain").addEventListener("click", start);
 
-$("privateSubmit").addEventListener("click", async () => {
+$("privateSubmit").addEventListener("click", () => {
   if (state !== "finished" || privateSaved) return;
 
-  const button = $("privateSubmit");
-  const status = $("recordStatus");
-  button.disabled = true;
-  status.textContent = "ログインを確認中…";
+  const url =
+    `${RANKING_BASE}/?game=kiss&view=mine&score=` +
+    encodeURIComponent(finishedScore);
 
-  try {
-    const me = await fetch(`${RANKING_BASE}/api/me`, {
-      credentials: "include"
-    });
-
-    if (me.status === 401) {
-      $("recordLoginForm").hidden = false;
-      status.textContent = "Blueskyのハンドルを入力してね";
-      button.disabled = false;
-      return;
-    }
-    if (!me.ok) throw new Error(`ログイン確認失敗: ${me.status}`);
-
-    const response = await fetch(`${RANKING_BASE}/api/my-scores`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ game: "kiss", score: finishedScore })
-    });
-    if (!response.ok) throw new Error(`保存失敗: ${response.status}`);
-
-    privateSaved = true;
-    status.textContent = "自分の記録に保存したよ ♥";
-  } catch (error) {
-    button.disabled = false;
-    status.textContent = "保存できませんでした。通信を確認してね。";
-    console.error(error);
-  }
+  window.location.href = url;
 });
+
 
 $("recordLoginForm").addEventListener("submit", event => {
   event.preventDefault();

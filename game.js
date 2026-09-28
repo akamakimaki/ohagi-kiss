@@ -2,7 +2,7 @@
 
 // ★ゲーム調整（速度はこれまでと同じ）
 const SETTINGS = {
-  seconds: 30, speed: 4.5, kissRange: 10, ohagiRange: 28, moveRange: 104,
+  seconds: 30, speed: 4.5, kissRange: 17, ohagiRange: 28, moveRange: 104,
   resultMs: 850
 };
 const IMAGES = {
@@ -369,8 +369,7 @@ $("recordLoginForm").addEventListener("submit", event => {
 
 $("shareResult").addEventListener("click", () => {
   const text = [
-    `おはぎKISSで ${finishedScore}回キス！💋`,
-    "あなたは30秒で何回チュッできる？",
+    `おはぎKISS💋の結果　${finishedScore}回キスされたァ…！！`,
     "",
     "https://akamakimaki.github.io/ohagi-kiss/?share=2",
     "",

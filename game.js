@@ -19,6 +19,47 @@ const overlay = $("heart-overlay");
 const RANKING_BASE = "https://ohagi-ranking.makimaki-feed.net";
 let finishedScore = 0;
 let privateSaved = false;
+function createPlayEventId() {
+
+  if (
+    globalThis.crypto &&
+    typeof globalThis.crypto.randomUUID === "function"
+  ) {
+    return globalThis.crypto.randomUUID();
+  }
+
+  return (
+    Date.now().toString(36) +
+    "_" +
+    Math.random().toString(36).slice(2) +
+    "_" +
+    Math.random().toString(36).slice(2)
+  );
+}
+
+function reportAnonymousPlay(game, playScore) {
+
+  fetch(
+    `${RANKING_BASE}/api/play-events`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        event_id: createPlayEventId(),
+        game,
+        score: playScore
+      }),
+      keepalive: true
+    }
+  ).catch(error => {
+    console.warn(
+      "匿名プレイ統計を送信できませんでした",
+      error
+    );
+  });
+}
 const STORE = "ohagi-kiss-v2";
 function readStored(key, fallback) {
   try { return localStorage.getItem(`${STORE}-${key}`) ?? fallback; } catch { return fallback; }
@@ -213,6 +254,7 @@ function stop() {
 function finish() {
   state = "finished";
   finishedScore = score;
+  reportAnonymousPlay("kiss", finishedScore);
   privateSaved = false;
   $("privateSubmit").disabled = false;
   $("recordLoginForm").hidden = true;

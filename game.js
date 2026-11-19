@@ -1,12 +1,57 @@
 "use strict";
 
 // ★ゲーム調整（速度はこれまでと同じ）
+
+
 const SETTINGS = {
-  seconds: 30, speed: 4.5, kissRange: 17, ohagiRange: 28, moveRange: 104,
+  seconds: 30,
+  bpm: 116,
+  beatsPerCycle: 3,
+  beatOffsetSec: 0.02,
+  kissRange: 17,
+  ohagiRange: 28,
+  moveRange: 104,
   resultMs: 850
 };
+
+// 通常・高速とも3拍で1往復。高速はBGMの1.5倍速に連動。
+// どちらも音楽の再生位置に同期させる。
+const MODES = {
+  rhythm: { beatsPerCycle: 3, resultMs: 850 },
+  fast: { beatsPerCycle: 3, resultMs: 450 }
+};
+let currentMode = "rhythm";
+function setGameMode(mode) {
+  if (!Object.hasOwn(MODES, mode)) return;
+  // プレイ中は速度や判定待ち時間を切り替えない
+  if (state === "playing" || state === "reaction") return;
+  currentMode = mode;
+  Object.assign(SETTINGS, MODES[mode]);
+  giyu.dataset.mode = currentMode === "fast" ? "fast" : "normal";
+  const normalButton = $("modeRhythm");
+  const fastButton = $("modeFast");
+  const description = $("modeDesc");
+  if (normalButton) {
+    normalButton.classList.toggle("is-active", mode === "rhythm");
+    normalButton.setAttribute("aria-pressed", String(mode === "rhythm"));
+  }
+  if (fastButton) {
+    fastButton.classList.toggle("is-active", mode === "fast");
+    fastButton.setAttribute("aria-pressed", String(mode === "fast"));
+  }
+  if (state !== "playing" && state !== "reaction") {
+    giyuImage.src = IMAGES.giyuNormal;
+  }
+  if (description) description.textContent = mode === "fast"
+    ? "高速で連続チュッ！ 上級者向けモード"
+    : "BGMに合わせて狙う、遊びやすいモード";
+}
+
+
+
 const IMAGES = {
-  giyuNormal: "./images/giyu-normal.png", giyuAttack: "./images/giyu-attack.png",
+  giyuNormal: "./images/giyu-normal.png",
+  giyuAttack: "./images/giyu-attack.png",
   giyuKiss: "./images/giyu-kiss.png", sanemiNormal: "./images/sanemi-normal.png",
   sanemiAngry: "./images/sanemi-angry.png", sanemiKiss: "./images/sanemi-kiss.png"
 };
@@ -113,8 +158,45 @@ let phase = -Math.PI / 2, lastTime = null, deadline = 0, nextAt = 0, raf = 0;
 let endingTimer = 0;
 function active() { return state === "playing" || state === "reaction"; }
 
+// HTMLのモード切り替えボタン（スタート前／終了後に選択可能）
+$("modeRhythm")?.addEventListener("click", () => setGameMode("rhythm"));
+$("modeFast")?.addEventListener("click", () => setGameMode("fast"));
+setGameMode("rhythm");
+
 
 let travelRange = SETTINGS.moveRange;
+
+let musicStartAt = 0;
+
+function getMusicTime(now) {
+  const bgm = sounds.bgm;
+
+  if (soundOn && !bgm.paused) {
+    return bgm.currentTime;
+  }
+
+  // BGMがOFFの場合はゲーム開始からの時間を使う
+  return (now - musicStartAt) / 1000 * sounds.bgm.playbackRate;
+}
+
+function updateGiyuPosition(now) {
+  const musicTime = getMusicTime(now);
+
+  // 高速モードだけ50ms先行させる
+  const syncAdjust = currentMode === "fast" ? 0.05 : 0;
+
+  const beats =
+    (musicTime + syncAdjust - SETTINGS.beatOffsetSec) *
+    SETTINGS.bpm / 60;
+
+  phase =
+    beats * 2 * Math.PI /
+    SETTINGS.beatsPerCycle;
+
+  offset = Math.sin(phase) * travelRange;
+  draw();
+}
+
 
 function draw() {
   giyu.style.top = "50%";
@@ -143,6 +225,7 @@ function resetScene() {
   $("burst").textContent = "";
   clearParticles($("projectiles"));
   giyuImage.src = IMAGES.giyuNormal;
+  giyu.dataset.mode = currentMode === "fast" ? "fast" : "normal";
   setSanemi("waiting");
 }
 
@@ -157,13 +240,12 @@ function beginAttempt() {
 
   resetScene();
   state = "playing";
-  phase = Math.random() < .5 ? -Math.PI / 2 : Math.PI / 2;
-  offset = Math.sin(phase) * travelRange;
-  lastTime = null;
-  draw();
+  updateGiyuPosition(performance.now());
 
   result.textContent = "高さを合わせて…";
-  message.textContent = "🍃「おはぎィ？」";
+  message.textContent = currentMode === "fast"
+    ? "🍃「速ェんだよォ！」"
+    : "🍃「おはぎィ？」";
   action.textContent = "ストップ！";
   action.disabled = false;
 }
@@ -179,10 +261,16 @@ function start() {
   stopEffects();
   score = 0;
   $("score").textContent = "0";
-  deadline = performance.now() + SETTINGS.seconds * 1000;
+  musicStartAt = performance.now();
+  deadline = musicStartAt + SETTINGS.seconds * 1000;
+  sounds.bgm.pause();
   sounds.bgm.currentTime = 0;
+  sounds.bgm.playbackRate = currentMode === "fast" ? 1.5 : 1;
+  if ("preservesPitch" in sounds.bgm) sounds.bgm.preservesPitch = currentMode !== "fast";
   playSound("bgm");
-  $("hint").textContent = "ピンクの真ん中でストップ！";
+  $("hint").textContent = currentMode === "fast"
+    ? "高速モード！ ピンクの真ん中でストップ！"
+    : "ピンクの真ん中でストップ！";
   beginAttempt();
   updateClock(performance.now());
   raf = requestAnimationFrame(tick);
@@ -199,10 +287,7 @@ function tick(now) {
   if (now >= deadline) { finish(); return; }
   if (state === "reaction" && now >= nextAt) beginAttempt();
   if (state === "playing") {
-    if (lastTime !== null) phase += Math.min((now - lastTime) / 1000, .05) * SETTINGS.speed;
-    lastTime = now;
-    offset = Math.sin(phase) * travelRange;
-    draw();
+    updateGiyuPosition(now);
   }
   raf = requestAnimationFrame(tick);
 }
@@ -374,12 +459,47 @@ function launchHearts() {
     });
   }
 }
+function returnToReady() {
+  clearTimeout(endingTimer);
+  cancelAnimationFrame(raf);
+  state = "ready";
+  sounds.bgm.pause();
+  sounds.bgm.currentTime = 0;
+  stopEffects();
+  $("ending").hidden = true;
+  $("timeUpFlash").hidden = true;
+  clearParticles(overlay);
+  score = 0;
+  $("score").textContent = "0";
+  $("time").textContent = SETTINGS.seconds.toFixed(1);
+  $("timeBar").style.transform = "scaleX(1)";
+  $("clock").classList.remove("urgent");
+  resetScene();
+  offset = -SETTINGS.moveRange;
+  draw();
+  action.disabled = false;
+  action.style.visibility = "visible";
+  action.textContent = "30秒チャレンジ、はじめる！";
+  result.textContent = "ど真ん中なら…？";
+  message.textContent = "🍃「おはぎィ？」";
+  $("hint").textContent = "モードを選んでからスタート！";
+  // 直前のモードを表示したまま、好きなモードに選び直せる
+  setGameMode(currentMode);
+}
 function activate() {
   if (state === "playing") stop();
-  else if (state === "ready" || state === "finished") start();
+  else if (state === "ready") start();
 }
 action.addEventListener("click", activate);
-$("playAgain").addEventListener("click", start);
+// リプレイボタンは背後のゲーム盤面へクリックを伝えない
+const playAgainButton = $("playAgain");
+playAgainButton.type = "button";
+playAgainButton.addEventListener("pointerdown", event => event.stopPropagation());
+playAgainButton.addEventListener("click", event => {
+  event.preventDefault();
+  event.stopPropagation();
+  returnToReady(); // 自動開始せず、モード選択画面へ戻す
+});
 
 $("privateSubmit").addEventListener("click", () => {
   if (state !== "finished" || privateSaved) return;
@@ -424,6 +544,8 @@ $("shareResult").addEventListener("click", () => {
   window.open(url, "_blank", "noopener,noreferrer");
 });
 stage.addEventListener("pointerdown", event => {
+  // 結果画面のボタン操作はゲーム盤面のタップ判定にしない
+  if (event.target.closest("#ending, button, a, input, select, textarea")) return;
   if (event.isPrimary === false || event.button > 0) return;
   event.preventDefault(); activate();
 });
@@ -432,6 +554,7 @@ stage.addEventListener("keydown", event => {
 });
 document.addEventListener("keydown", event => {
   if (event.code !== "Space" || event.target === $("sound")) return;
+  if (event.target?.closest?.(".mode-switch")) return;
   if (state === "finished" && event.target === $("playAgain")) return;
   event.preventDefault(); if (!event.repeat) activate();
 });
